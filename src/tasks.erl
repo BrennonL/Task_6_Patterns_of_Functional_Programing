@@ -20,6 +20,10 @@
 %%% Created : 10 May 2023 by Lee Barney <barney.cit@gmail.com>
 %%%-------------------------------------------------------------------
 
+%% Let f and g be functions of the same type where each takes a single parameter of the same type,
+%% then to f compose g, you evaluate f(x) and pass it into g. g(f(x))
+
+
 -module(tasks).
 
 %%%===================================================================
@@ -118,7 +122,8 @@ id()->
 %% Value - a 2-tuple consisting of ok, and the data parameter
 %% Complexity - O(1)
 %%
-maybe_id(Data)-> to_do.
+maybe_id(Data)-> 
+	{ok, Data}.
 
 %%
 %% Unwraps the monadal type and applies the lambda function to the value in the monadal type.
@@ -134,7 +139,11 @@ maybe_id(Data)-> to_do.
 %%
 maybe_bind({fail,_Failed_lambda,_Data} = Monadal_type,_Lambda)->Monadal_type;
 maybe_bind({_,Data},Lambda)->
-	to_do.
+	Result = Lambda(Data),
+	case Result of
+		maybe_failure -> {fail,Lambda,Data};
+		_Otherwise -> {ok,Result}
+	end.
 
 %%
 %% Applies the list of data manipulation lambda functions, in the order declared, to a 
@@ -142,13 +151,14 @@ maybe_bind({_,Data},Lambda)->
 %%
 %% Parameters - 1) a monadal type.
 %%			  - 2) a binding function that is part of the monad being used
-%%			  - 3) a list of data minipulation monadal lambda functions
+%%			  - 3) a list of data manipulation monadal lambda functions
 %% Value - a second monadal type as defined by the monadal lambda functions applied. 
-%% Complexity - O(f(n)) where f(n) is the greates complexity of the monadal lambda functions.
+%% Complexity - O(f(n)) where f(n) is the greatest complexity of the monadal lambda functions.
 %%
-monad_chain(Monadal_type,Binding_lambda,Data_manipulators)->
-	to_do.
-
+monad_chain(Monadal_type,_,[])->
+	Monadal_type;
+monad_chain(Monadal_type,Binding_lambda,[First|Rest])->
+	monad_chain(Binding_lambda(Monadal_type, First), Binding_lambda, Rest).
 
 
 
